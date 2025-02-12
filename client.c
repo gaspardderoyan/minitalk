@@ -69,7 +69,14 @@ int	main(int ac, char **av)
 
     mt.i = 0;
     mt.c = 0;
-    mt.str = av[2];
+	int len = strlen(av[2]) + 2; // +2 for newline and null terminator
+	mt.str = malloc(len);
+	if (!mt.str)
+		return (fprintf(stderr, "Malloc failed!\n"), 1);
+	strcpy(mt.str, av[2]);
+	mt.str[len - 2] = '\n';
+	mt.str[len - 1] = '\0';
+
     set_signal_action();
     send_bit(); //send the first signal
     while (1) {
