@@ -1,43 +1,44 @@
+// server.c
+#include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <strings.h>
 #include <stdio.h>
 #include <signal.h>
 #include <stdint.h>
-#include <math.h>
 
 struct current_byte {
 	u_int8_t bytes;
 	u_int8_t counter;
+	volatile sig_atomic_t received_signal;
+	int	current_pid;
 };
 
 struct current_byte curr_b;
 
-void	signal_handler(int signal)
+void	signal_handler(int signum, siginfo_t *info, void *context)
 {
-	if (signal == SIGUSR1)
+	if (signum == SIGUSR1)
 	{
 		curr_b.counter++;
-		printf("SIGUSR1 - 0\n");
-		printf("counter: %d\n", curr_b.counter);
-		printf("byte: %d\n", curr_b.bytes);
 	}
-	if (signal == SIGUSR2)
+	if (signum == SIGUSR2)
 	{
-		curr_b.bytes = curr_b.bytes | (u_int8_t)pow(2, 7 - curr_b.counter);
+		curr_b.bytes |= (1 << (8 - curr_b.counter));
 		curr_b.counter++;
-		printf("SIGUSR2 - 1\n");
-		printf("counter: %d\n", curr_b.counter);
-		printf("byte: %d\n", curr_b.bytes);
 	}
+
+	curr_b.received_signal = 1;
+	curr_b.current_pid = info->si_pid;
 }
 
 void	set_signal_action(void)
 {
 	struct sigaction	act;
 
-	bzero(&act, sizeof(act));
-	act.sa_handler = &signal_handler;
+	memset(&act, 0, sizeof(act));
+	act.sa_sigaction = &signal_handler;
+	act.sa_flags = SA_SIGINFO;
 
 	sigaction(SIGUSR1, &act, NULL);
 	sigaction(SIGUSR2, &act, NULL);
@@ -49,18 +50,22 @@ int	main(void)
 	printf("PID: %i\n", pid);
 
 	curr_b.bytes = 0;
-	curr_b.counter = 0;
+	curr_b.counter = 1;
+	curr_b.received_signal = 0;
 
 	set_signal_action();
 	while (1)
 	{
-		if (curr_b.counter == 7)
+		while (!curr_b.received_signal)
+			pause();
+		curr_b.received_signal = 0;
+		if (curr_b.counter == 9)
 		{
-			printf("char: -%c-\n", (char)curr_b.bytes);
+			write(1, &curr_b.bytes, 1);
 			curr_b.bytes = 0;
-			curr_b.counter = 0;
+			curr_b.counter = 1;
 		}
-		continue ;
+		kill(curr_b.current_pid, SIGUSR1);
 	}
 	return (0);
 }
