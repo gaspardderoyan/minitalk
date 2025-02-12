@@ -21,11 +21,13 @@ void	signal_handler(int signal)
 {
 	if (signal == SIGUSR1)
 		send_bit();
+	// TODO if sigusr2, print "message recieved"
 
 }
 
 void	send_bit(void)
 {
+	// TODO add something where if it's the last bit, we send it with a diff flag
 	if (mt.str[mt.c] == '\0')
 		exit(0);
 	uint8_t curr_bit;
@@ -53,6 +55,7 @@ void	set_signal_action(void)
 
 	sigaction(SIGUSR1, &act, NULL);
 }
+
 
 int	main(int ac, char **av)
 {
