@@ -1,17 +1,15 @@
-// server.c
-#include <string.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <strings.h>
-#include <stdio.h>
-#include <signal.h>
-
-struct current_byte {
-	u_int8_t				bytes;
-	u_int8_t				counter;
-	volatile sig_atomic_t	received_signal;
-	int						current_pid;
-};
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gderoyqn <gderoyqn@student.42london.com>   +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/13 18:39:04 by gderoyqn          #+#    #+#             */
+/*   Updated: 2025/02/13 18:55:19 by gderoyqn         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+#include "minitalk.h"
 
 struct current_byte curr_b;
 
@@ -32,7 +30,7 @@ void	set_signal_action(void)
 {
 	struct sigaction	act;
 
-	memset(&act, 0, sizeof(act));
+	ft_memset(&act, 0, sizeof(act));
 	act.sa_sigaction = &signal_handler;
 	act.sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, &act, NULL);
@@ -41,7 +39,7 @@ void	set_signal_action(void)
 
 int	main(void)
 {
-	printf("%i\n", getpid());
+	ft_printf("%i\n", getpid());
 	curr_b.bytes = 0;
 	curr_b.counter = 1;
 	curr_b.received_signal = 0;
