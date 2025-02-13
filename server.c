@@ -5,7 +5,6 @@
 #include <strings.h>
 #include <stdio.h>
 #include <signal.h>
-#include <stdint.h>
 
 struct current_byte {
 	u_int8_t bytes;
