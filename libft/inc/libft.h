@@ -6,7 +6,7 @@
 /*   By: gderoyqn <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 15:30:39 by gderoyqn          #+#    #+#             */
-/*   Updated: 2024/12/04 13:00:12 by gderoyqn         ###   ########.fr       */
+/*   Updated: 2025/02/13 19:33:25 by gderoyqn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,6 @@
 # include <stdint.h>
 # include <errno.h>
 # include <stdbool.h>
-
-
 
 typedef struct s_list
 {
@@ -93,11 +91,10 @@ char		*ft_itoa_base(unsigned long long n, char *base);
 void		p_ubase(va_list *ptr, int *ccount, char *base);
 void		p_ptr(va_list *ptr, int *ccount);
 void		p_int(va_list *ptr, int *ccount);
-int		    ft_printf(const char *str, ...);
+int			ft_printf(const char *str, ...);
 
 // MINI_STRTOLL
 long long	mini_strtoll(const char *nptr, int radix);
 int			ft_isspace(int c);
-
 
 #endif

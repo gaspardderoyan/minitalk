@@ -6,27 +6,27 @@
 /*   By: gderoyqn <gderoyqn@student.42london.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 18:39:04 by gderoyqn          #+#    #+#             */
-/*   Updated: 2025/02/13 18:55:19 by gderoyqn         ###   ########.fr       */
+/*   Updated: 2025/02/13 19:25:45 by gderoyqn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "minitalk.h"
 
-struct current_byte curr_b;
+struct s_current_byte	g_curr_b;
 
-void	signal_handler(int signum, siginfo_t *info, void *context)
+static void	signal_handler(int signum, siginfo_t *info, void *context)
 {
 	if (signum == SIGUSR1)
-		curr_b.counter++;
+		g_curr_b.counter++;
 	if (signum == SIGUSR2)
 	{
-		curr_b.bytes |= (1 << (8 - curr_b.counter));
-		curr_b.counter++;
+		g_curr_b.bytes |= (1 << (8 - g_curr_b.counter));
+		g_curr_b.counter++;
 	}
-	curr_b.received_signal = 1;
-	curr_b.current_pid = info->si_pid;
+	g_curr_b.received_signal = 1;
+	g_curr_b.current_pid = info->si_pid;
 }
 
-void	set_signal_action(void)
+static void	set_signal_action(void)
 {
 	struct sigaction	act;
 
@@ -37,33 +37,38 @@ void	set_signal_action(void)
 	sigaction(SIGUSR2, &act, NULL);
 }
 
+static void	setup_struct(void)
+{
+	g_curr_b.bytes = 0;
+	g_curr_b.counter = 1;
+	g_curr_b.received_signal = 0;
+}
+
 int	main(void)
 {
 	ft_printf("%i\n", getpid());
-	curr_b.bytes = 0;
-	curr_b.counter = 1;
-	curr_b.received_signal = 0;
+	setup_struct();
 	set_signal_action();
 	while (1)
 	{
-		while (!curr_b.received_signal)
+		while (!g_curr_b.received_signal)
 			pause();
-		curr_b.received_signal = 0;
-		if (curr_b.counter == 9)
+		g_curr_b.received_signal = 0;
+		if (g_curr_b.counter == 9)
 		{
-			write(1, &curr_b.bytes, 1);
-			if (!curr_b.bytes)
+			write(1, &g_curr_b.bytes, 1);
+			if (!g_curr_b.bytes)
 			{
-				kill(curr_b.current_pid, SIGUSR2);
+				kill(g_curr_b.current_pid, SIGUSR2);
 				write(1, "\n", 1);
-				curr_b.bytes = 0;
-				curr_b.counter = 1;
+				g_curr_b.bytes = 0;
+				g_curr_b.counter = 1;
 				continue ;
 			}
-			curr_b.bytes = 0;
-			curr_b.counter = 1;
+			g_curr_b.bytes = 0;
+			g_curr_b.counter = 1;
 		}
-		kill(curr_b.current_pid, SIGUSR1);
+		kill(g_curr_b.current_pid, SIGUSR1);
 	}
 	return (0);
 }
