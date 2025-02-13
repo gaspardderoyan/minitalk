@@ -32,8 +32,6 @@ void	signal_handler(int signal)
 void	send_bit(void)
 {
 	// TODO add something where if it's the last bit, we send it with a diff flag
-	/*if (mt.str[mt.c] == '\0')*/
-	/*	exit(0);*/
 	uint8_t curr_bit;
 	curr_bit = (mt.str[mt.c] >> (7 - mt.i)) & 1; // Get the bit, shift it to the right
 	if (curr_bit)
@@ -77,17 +75,12 @@ int	main(int ac, char **av)
 
     mt.i = 0;
     mt.c = 0;
-	int len = strlen(av[2]) + 2; // +2 for newline and null terminator
-	mt.str = malloc(len);
-	if (!mt.str)
-		return (fprintf(stderr, "Malloc failed!\n"), 1);
-	strcpy(mt.str, av[2]);
-	mt.str[len - 2] = '\n';
-	mt.str[len - 1] = '\0';
+	mt.str = av[2];
 
     set_signal_action();
-    send_bit(); //send the first signal
-    while (1) {
+    send_bit();
+    while (1)
+	{
         pause();
     }
 

@@ -60,11 +60,14 @@ int	main(void)
 		curr_b.received_signal = 0;
 		if (curr_b.counter == 9)
 		{
-			if (curr_b.bytes == 0)
+			// kill(curr_b.current_pid, SIGUSR2);
+			write(1, &curr_b.bytes, 1);
+			if (!curr_b.bytes)
 			{
 				kill(curr_b.current_pid, SIGUSR2);
+				write(1, "\n", 1);
+				continue ;
 			}
-			write(1, &curr_b.bytes, 1);
 			curr_b.bytes = 0;
 			curr_b.counter = 1;
 		}
