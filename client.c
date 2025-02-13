@@ -31,9 +31,9 @@ void	signal_handler(int signal)
 
 void	send_bit(void)
 {
-	// TODO add something where if it's the last bit, we send it with a diff flag
 	uint8_t curr_bit;
-	curr_bit = (mt.str[mt.c] >> (7 - mt.i)) & 1; // Get the bit, shift it to the right
+
+	curr_bit = (mt.str[mt.c] >> (7 - mt.i)) & 1;
 	if (curr_bit)
 		kill(mt.pid, SIGUSR2);
 	else
@@ -67,22 +67,13 @@ int	main(int ac, char **av)
         return 1;
     }
 
-    mt.pid = atoi(av[1]); // Get server PID
-    if (mt.pid <= 0) {
-       fprintf(stderr, "Invalid PID\n");
-        return 1;
-    }
-
+    mt.pid = atoi(av[1]);
     mt.i = 0;
     mt.c = 0;
 	mt.str = av[2];
-
     set_signal_action();
     send_bit();
     while (1)
-	{
         pause();
-    }
-
-    return 0;
+    return (0);
 }
